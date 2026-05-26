@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 Choses que Personne ne t'Apprend sur la Lipocavitation — Deborah.S</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordeaux: #704E56;
+    --creme: #F8F7F7;
+    --blush: #EEDEDF;
+    --rose-poudre: #E0C0C1;
+    --rose-clair: #F4EEEE;
+    --whatsapp: #25D366;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--creme);
+    color: var(--bordeaux);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* HERO */
+  .hero {
+    background-color: var(--bordeaux);
+    color: var(--creme);
+    padding: 60px 30px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(240,220,220,0.07);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 150px; height: 150px;
+    border-radius: 50%;
+    background: rgba(240,220,220,0.05);
+  }
+
+  .hero-label {
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose-poudre);
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: var(--creme);
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--rose-poudre);
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(248,247,247,0.75);
+    max-width: 340px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .hero-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--rose-poudre);
+    margin: 24px auto;
+    opacity: 0.5;
+  }
+
+  /* INTRO */
+  .intro {
+    padding: 40px 28px;
+    background: var(--rose-clair);
+    border-bottom: 1px solid var(--blush);
+  }
+
+  .intro p {
+    font-size: 15px;
+    color: var(--bordeaux);
+    line-height: 1.8;
+    margin-bottom: 14px;
+  }
+
+  .intro p:last-child { margin-bottom: 0; }
+
+  .intro strong {
+    font-weight: 500;
+    color: var(--bordeaux);
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    padding: 40px 28px 10px;
+    text-align: center;
+  }
+
+  .section-title h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--bordeaux);
+    line-height: 1.3;
+  }
+
+  .section-title .underline {
+    width: 50px;
+    height: 1px;
+    background: var(--bordeaux);
+    margin: 16px auto 0;
+    opacity: 0.3;
+  }
+
+  /* CARDS */
+  .cards {
+    padding: 20px 20px 10px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--blush);
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.2s; }
+  .card:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 300;
+    color: var(--blush);
+    position: absolute;
+    top: 10px; right: 20px;
+    line-height: 1;
+  }
+
+  .card-tag {
+    display: inline-block;
+    background: var(--rose-clair);
+    color: var(--bordeaux);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--bordeaux);
+    margin-bottom: 12px;
+    line-height: 1.3;
+    padding-right: 30px;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  .card p:last-child { margin-bottom: 0; }
+
+  .card-highlight {
+    background: var(--rose-clair);
+    border-left: 3px solid var(--bordeaux);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--bordeaux);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  /* DEUX CIBLES */
+  .deux-cibles {
+    padding: 30px 20px;
+  }
+
+  .cible-card {
+    border-radius: 16px;
+    padding: 26px 22px;
+    margin-bottom: 14px;
+  }
+
+  .cible-card.praticienne {
+    background: var(--bordeaux);
+    color: var(--creme);
+  }
+
+  .cible-card.reconvertie {
+    background: var(--blush);
+    color: var(--bordeaux);
+  }
+
+  .cible-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.7;
+  }
+
+  .cible-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .cible-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .cible-list {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  .cible-list li {
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cible-card.reconvertie .cible-list li {
+    border-bottom-color: rgba(112,78,86,0.1);
+  }
+
+  .cible-list li::before {
+    content: '→';
+    font-size: 12px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* DEBORAH SECTION */
+  .deborah-section {
+    background: var(--bordeaux);
+    color: var(--creme);
+    padding: 40px 28px;
+    text-align: center;
+  }
+
+  .deborah-section h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .deborah-section p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(248,247,247,0.8);
+    margin-bottom: 12px;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 24px 0;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--rose-poudre);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: rgba(248,247,247,0.6);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    display: block;
+  }
+
+  /* FORMATION SECTION */
+  .formation-section {
+    padding: 36px 20px;
+    background: var(--creme);
+  }
+
+  .formation-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--bordeaux);
+    text-align: center;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .formation-sub {
+    text-align: center;
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 24px;
+  }
+
+  .formation-card {
+    background: white;
+    border: 1px solid var(--blush);
+    border-radius: 16px;
+    padding: 22px 20px;
+    margin-bottom: 12px;
+  }
+
+  .formation-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--bordeaux);
+    margin-bottom: 8px;
+  }
+
+  .formation-card p {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+
+  .formation-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .badge {
+    background: var(--rose-clair);
+    color: var(--bordeaux);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* CTA SECTION */
+  .cta-section {
+    background: var(--blush);
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--bordeaux);
+    margin-bottom: 14px;
+    line-height: 1.3;
+  }
+
+  .cta-section p {
+    font-size: 14px;
+    color: var(--bordeaux);
+    opacity: 0.75;
+    margin-bottom: 24px;
+    line-height: 1.7;
+  }
+
+  .btn-whatsapp {
+    display: block;
+    background: var(--whatsapp);
+    color: white;
+    text-decoration: none;
+    padding: 16px 28px;
+    border-radius: 50px;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    transition: opacity 0.2s;
+  }
+
+  .btn-whatsapp:hover { opacity: 0.9; }
+
+  .btn-whatsapp span {
+    margin-right: 8px;
+    font-size: 18px;
+  }
+
+  .cta-note {
+    font-size: 12px;
+    color: var(--bordeaux);
+    opacity: 0.5;
+    font-style: italic;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--bordeaux);
+    color: rgba(248,247,247,0.5);
+    text-align: center;
+    padding: 24px 20px;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  footer strong {
+    color: var(--creme);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-label">Guide Gratuit — Deborah.S Academy</p>
+  <h1>3 choses que personne<br>ne t'apprend sur<br><em>la Lipocavitation</em></h1>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">Ce que j'enseigne dès la première heure de formation — et que la plupart des praticiennes découvrent trop tard.</p>
+</div>
+
+<!-- INTRO -->
+<div class="intro">
+  <p>Beaucoup se lancent dans la lipocavitation sans vraiment comprendre comment ça fonctionne. <strong>Pas parce qu'elles sont négligentes — parce que personne ne leur a appris.</strong></p>
+  <p>La lipo ce n'est pas appuyer sur un bouton et attendre. C'est un protocole précis. Une logique. Une vraie technique.</p>
+  <p>Voici les 3 points que je vois systématiquement mal maîtrisés — que tu sois praticienne ou que tu veuilles te former.</p>
+</div>
+
+<!-- 3 CHOSES -->
+<div class="section-title">
+  <h2>Les 3 vérités sur la lipo</h2>
+  <div class="underline"></div>
+</div>
+
+<div class="cards">
+
+  <div class="card">
+    <span class="card-number">01</span>
+    <span class="card-tag">Physique des ultrasons</span>
+    <h3>Le contact avec la peau change tout</h3>
+    <p>Les ultrasons ont besoin d'un contact continu avec la peau pour pénétrer les tissus. Dès que la tête de la machine se soulève — même une fraction de seconde — l'onde se disperse dans l'air.</p>
+    <p>La cellule graisseuse n'est plus atteinte. La séance tourne à vide sans que tu t'en rendes compte.</p>
+    <div class="card-highlight">Résultat : ta cliente ne voit pas de différence. Et elle ne revient pas.</div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">02</span>
+    <span class="card-tag">Sécurité</span>
+    <h3>Il y a des zones qu'on ne travaille jamais</h3>
+    <p>Le visage. Les reins. Les zones osseuses proéminentes. La lipocavitation travaille sur les tissus adipeux du corps uniquement — jamais sur le visage.</p>
+    <p>Les ultrasons pénètrent en profondeur. Mal placés, les risques sont réels et irréversibles. Ce ne sont pas des recommandations — ce sont des limites absolues.</p>
+    <div class="card-highlight">Une bonne formation t'apprend où poser ta machine — et où ne jamais la poser.</div>
+  </div>
+
+  <div class="card">
+    <span class="card-number">03</span>
+    <span class="card-tag">Protocole</span>
+    <h3>Les résultats dépendent du protocole — pas de la machine</h3>
+    <p>Deux praticiennes. La même machine. Des résultats complètement différents. Ce n'est pas l'appareil qui fait la différence.</p>
+    <p>C'est la maîtrise du protocole — la pression, le mouvement, la durée, la zone travaillée, l'ordre des étapes.</p>
+    <div class="card-highlight">La machine est un outil. Le protocole est la compétence.</div>
+  </div>
+
+</div>
+
+<!-- DEUX CIBLES -->
+<div class="deux-cibles">
+
+  <div class="cible-card praticienne">
+    <p class="cible-label">Tu es praticienne</p>
+    <h3>Ce que ça change pour ton activité</h3>
+    <ul class="cible-list">
+      <li>Tes clientes voient de vrais résultats — elles reviennent</li>
+      <li>Ta réputation se construit sur des résultats concrets</li>
+      <li>Tu travailles en sécurité — zéro risque pour ta cliente</li>
+      <li>Tu justifies tes tarifs avec confiance</li>
+      <li>Tes clientes te recommandent naturellement</li>
+    </ul>
+  </div>
+
+  <div class="cible-card reconvertie">
+    <p class="cible-label">Tu veux te reconvertir</p>
+    <h3>Ce que ça change pour ton projet</h3>
+    <ul class="cible-list">
+      <li>Tu apprends les bonnes bases dès le départ</li>
+      <li>Tu évites les erreurs que font 80% des débutantes</li>
+      <li>Tu lances ton activité avec les bons protocoles</li>
+      <li>Tu construis une clientèle fidèle dès ta première séance</li>
+      <li>Tu te différencies dès le départ</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- DEBORAH -->
+<div class="deborah-section">
+  <h2>Pourquoi tu peux me faire confiance</h2>
+  <p>Formatrice et praticienne depuis 2018. J'ai tout appris seule après une mauvaise formation — et c'est pour ça que je forme différemment.</p>
+  <p>Je forme pour que mes élèves ne vivent pas ce que j'ai vécu.</p>
+
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-number">116</span>
+      <span class="stat-label">Avis Google 5⭐</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">2018</span>
+      <span class="stat-label">En activité</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">✅</span>
+      <span class="stat-label">Qualiopi · CPF</span>
+    </div>
+  </div>
+</div>
+
+<!-- FORMATIONS -->
+<div class="formation-section">
+  <h2 class="formation-title">Mes formations</h2>
+  <p class="formation-sub">Présentiel · Visio · Groupe 3 personnes max</p>
+
+  <div class="formation-card">
+    <p class="formation-card-title">Lipocavitation + Radiofréquence + Lipolaser + Vacuum Therapy</p>
+    <p>Corps et visage. La formation complète pour maîtriser les techniques minceur et remodelage les plus demandées.</p>
+    <div class="formation-badges">
+      <span class="badge">À partir de 2 000€</span>
+      <span class="badge">CPF accepté</span>
+      <span class="badge">Paiement 4×</span>
+      <span class="badge">Certificat</span>
+      <span class="badge">Suivi illimité</span>
+    </div>
+  </div>
+
+  <div class="formation-card">
+    <p class="formation-card-title">Drainage Lymphatique Brésilien</p>
+    <p>Visage et corps. Protocoles complets pour des résultats visibles dès la première séance.</p>
+    <div class="formation-badges">
+      <span class="badge">À partir de 790€</span>
+      <span class="badge">CPF accepté</span>
+      <span class="badge">Paiement 4×</span>
+    </div>
+  </div>
+
+  <div class="formation-card">
+    <p class="formation-card-title">Madérothérapie Corps</p>
+    <p>Techniques de sculpture corporelle avec les rouleaux en bois. Standard et premium.</p>
+    <div class="formation-badges">
+      <span class="badge">À partir de 750€</span>
+      <span class="badge">CPF accepté</span>
+      <span class="badge">Paiement 4×</span>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Tu veux apprendre ça<br>correctement ?</h2>
+  <p>Écris-moi directement sur WhatsApp. Je te réponds personnellement et on trouve ensemble la formation qui correspond à ton projet.</p>
+
+  <a href="https://wa.me/33780996061?text=Bonjour%20Deborah%2C%20j%27ai%20lu%20le%20guide%20LIPO%20et%20je%20voudrais%20en%20savoir%20plus%20sur%20la%20formation%20🤎" class="btn-whatsapp">
+    <span>💬</span> Écrire à Deborah sur WhatsApp
+  </a>
+
+  <p class="cta-note">Je réponds personnellement à chaque message 🤎</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Deborah.S</strong> · Formatrice & Praticienne depuis 2018<br>
+  Créteil · Certifiée Qualiopi · CPF accepté
+</footer>
+
+</body>
+</html>

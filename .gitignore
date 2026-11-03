@@ -4,3 +4,4 @@
 pack-styles-effets/
 # Images de test
 test-pack.png
+__pycache__/

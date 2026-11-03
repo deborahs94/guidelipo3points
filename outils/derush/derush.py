@@ -19,6 +19,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -371,23 +372,25 @@ def keep_segments(cuts, duration, fps):
     return [s for s in segs if s[1] - s[0] >= 1.0 / fps]
 
 
-def render(video, segs, out):
-    parts, labels = [], ""
-    for i, (a, b) in enumerate(segs):
-        d = b - a
-        fade = min(0.005, d / 4)
-        parts.append(f"[0:v]trim=start={a:.6f}:end={b:.6f},setpts=PTS-STARTPTS[v{i}]")
-        parts.append(f"[0:a]atrim=start={a:.6f}:end={b:.6f},asetpts=PTS-STARTPTS,"
-                     f"afade=t=in:d={fade:.4f},afade=t=out:st={max(0, d - fade):.4f}:d={fade:.4f}[a{i}]")
-        labels += f"[v{i}][a{i}]"
-    parts.append(f"{labels}concat=n={len(segs)}:v=1:a=1[v][a]")
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
-        f.write(";\n".join(parts))
-        script = f.name
-    run(["ffmpeg", "-y", "-v", "error", "-i", video, "-filter_complex_script", script,
-         "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "18", "-preset", "medium",
-         "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", out])
-    os.unlink(script)
+def render(video, segs, out, fps):
+    """Chaque morceau gardé est encodé à part (calé sur ses images), puis les morceaux sont mis bout à bout.
+    Le son reste en PCM jusqu'à l'assemblage pour éviter tout blanc ou clic aux raccords."""
+    tmp = tempfile.mkdtemp(prefix="derush_morceaux_")
+    liste = os.path.join(tmp, "liste.txt")
+    with open(liste, "w") as f:
+        for i, (a, b) in enumerate(segs):
+            d = b - a
+            n = round(d * fps)
+            fade = min(0.005, d / 4)
+            m = os.path.join(tmp, f"m{i:04d}.mkv")
+            run(["ffmpeg", "-y", "-v", "error", "-ss", f"{a:.6f}", "-i", video, "-frames:v", str(n), "-t", f"{d:.6f}",
+                 "-af", f"afade=t=in:d={fade:.4f},afade=t=out:st={max(0, d - fade):.4f}:d={fade:.4f}",
+                 "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p", "-r", str(fps),
+                 "-c:a", "pcm_s16le", "-ar", "48000", m])
+            f.write(f"file '{m}'\n")
+    run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", liste, "-c:v", "copy",
+         "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", out])
+    shutil.rmtree(tmp, ignore_errors=True)
 
 
 def to_output_time(t, cuts):
@@ -469,6 +472,7 @@ def main():
     ap.add_argument("--sortie", help="vidéo dérushée (par défaut : NOM_derush.mp4)")
     ap.add_argument("--modele", default="medium", help="modèle Whisper (medium, turbo, large-v3...)")
     ap.add_argument("--moteur", choices=["auto", "whisper"], default="auto")
+    ap.add_argument("--transcription", help="réutiliser la transcription d'un passage précédent (fichier _mots.json)")
     ap.add_argument("--couper-ajouts", action="store_true",
                     help="couper aussi les mots ajoutés hors script qui ne sont pas des reprises")
     args = ap.parse_args()
@@ -481,7 +485,12 @@ def main():
 
     print(f"▶ Vidéo : {args.video} ({duration:.2f} s, {fps:g} images/s)")
     audio = extract_audio(args.video, os.path.join(tmp, "original.wav"))
-    engine, reason, words = transcribe(os.path.join(tmp, "original.wav"), *engine_args)
+    if args.transcription:
+        engine, reason, words = "transcription réutilisée", args.transcription, json.load(open(args.transcription))
+    else:
+        engine, reason, words = transcribe(os.path.join(tmp, "original.wav"), *engine_args)
+        with open(os.path.splitext(out)[0] + "_mots.json", "w", encoding="utf-8") as f:
+            json.dump(words, f, ensure_ascii=False)
     print(f"▶ Transcription : {engine} ({reason})")
     print("  Entendu : " + " ".join(w["mot"] for w in words))
 
@@ -500,7 +509,7 @@ def main():
 
     for attempt in range(1, 4):
         segs = keep_segments(cuts, duration, fps)
-        render(args.video, segs, out)
+        render(args.video, segs, out, fps)
         ver = verify(args.video, out, words, status, cuts, db, thr, engine_args, tmp)
         really_missing = [m["index"] for m in ver["mots_manquants"] if m["dans_une_coupe"] or not m["son_present"]]
         really_missing += [e["index"] for e in ver["mots_coupes_par_erreur"]]

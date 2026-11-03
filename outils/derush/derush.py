@@ -574,7 +574,7 @@ def render(video, segs, out, fps):
             m = os.path.join(tmp, f"m{i:04d}.mkv")
             run(["ffmpeg", "-y", "-v", "error", "-ss", f"{a:.6f}", "-i", video, "-frames:v", str(n), "-t", f"{d:.6f}",
                  "-af", f"afade=t=in:d={fade:.4f},afade=t=out:st={max(0, d - fade):.4f}:d={fade:.4f}",
-                 "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p", "-r", str(fps),
+                 "-c:v", "libx264", "-crf", "14", "-preset", "medium", "-pix_fmt", "yuv420p", "-r", str(fps),
                  "-c:a", "pcm_s16le", "-ar", "48000", m])
             f.write(f"file '{m}'\n")
     run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", liste, "-c:v", "copy",

@@ -1,0 +1,6 @@
+# Navigateur téléchargé par Remotion
+.remotion/
+# Pack de styles (contenu acheté : pas sur un dépôt public sans accord)
+pack-styles-effets/
+# Images de test
+test-pack.png

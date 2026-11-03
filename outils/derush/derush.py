@@ -34,6 +34,8 @@ HOP = 0.010            # pas d'analyse (10 ms)
 MIN_SILENCE = 0.060    # un silence doit durer au moins 60 ms pour accueillir une coupe
 EDGE_MARGIN = 0.020    # marge de sécurité à l'intérieur d'un silence
 HESITATIONS = {"euh", "heu", "euhm", "hum", "hmm", "mmh", "mm", "bah", "ben", "ah", "oh", "eh", "hein"}
+# mots qui signalent une prise ratée : tout le groupe de mots en trop qui les contient est coupé
+RECOMMENCE = {"recommence", "recommencer", "recommencé", "attends", "pardon", "oups", "zut", "mince"}
 
 
 # ----------------------------------------------------------------------------- outils
@@ -109,21 +111,62 @@ def transcribe_elevenlabs(wav, key):
 _WHISPER = {}
 
 
+HALLUCINATIONS = re.compile(r"merci d.avoir regard|sous-titr|abonnez-vous|amara\.org|merci de votre attention", re.I)
+
+
+def speech_chunks(audio):
+    """Découpe le son en passages parlés séparés par des silences (Whisper rate les reprises sur un long fichier)."""
+    db = energy_db(audio)
+    floor, voice = float(np.percentile(db, 10)), float(np.percentile(db, 95))
+    active = db > floor + max(6.0, 0.25 * (voice - floor))
+    regions, k = [], 0
+    while k < len(active):
+        if active[k]:
+            e = k
+            while e + 1 < len(active) and active[e + 1]:
+                e += 1
+            t0, t1 = k * HOP, e * HOP + FRAME
+            if regions and t0 - regions[-1][1] < 0.6:
+                regions[-1][1] = t1
+            else:
+                regions.append([t0, t1])
+            k = e + 1
+        else:
+            k += 1
+    regions = [r for r in regions if r[1] - r[0] >= 0.15]
+    dur = len(audio) / SR
+    chunks = []
+    for i, (t0, t1) in enumerate(regions):
+        lo = max(t0 - 0.3, (regions[i - 1][1] + t0) / 2 if i else 0.0)
+        hi = min(t1 + 0.3, (t1 + regions[i + 1][0]) / 2 if i + 1 < len(regions) else dur)
+        chunks.append((lo, hi))
+    return chunks
+
+
 def transcribe_whisper(wav, model_name):
     import whisper
     if model_name not in _WHISPER:
         _WHISPER[model_name] = whisper.load_model(model_name)
-    res = _WHISPER[model_name].transcribe(
-        wav, language="fr", word_timestamps=True, temperature=0.0,
-        condition_on_previous_text=False, fp16=False,
-        # incite Whisper à écrire les hésitations au lieu de les effacer
-        initial_prompt="Euh, alors, hum... je, je veux dire, euh, bon.")
+    sr, data = wavfile.read(wav)
+    audio = data.astype(np.float32) / 32768.0
     words = []
-    for seg in res["segments"]:
-        for w in seg.get("words", []):
-            t = w["word"].strip()
-            if t:
-                words.append({"mot": t, "debut": float(w["start"]), "fin": float(w["end"])})
+    for lo, hi in speech_chunks(audio):
+        clip = audio[int(lo * SR):int(hi * SR)]
+        if len(clip) < SR * 0.2:
+            continue
+        res = _WHISPER[model_name].transcribe(
+            clip, language="fr", word_timestamps=True, temperature=0.0,
+            condition_on_previous_text=False, fp16=False,
+            # incite Whisper à écrire les hésitations au lieu de les effacer
+            initial_prompt="Euh, alors, hum... je, je veux dire, euh, bon.")
+        for seg in res["segments"]:
+            if HALLUCINATIONS.search(seg.get("text", "")):
+                continue  # phrase inventée par Whisper sur un bruit ou un silence
+            for w in seg.get("words", []):
+                t = w["word"].strip()
+                if t and t not in ("...", "…"):
+                    words.append({"mot": t, "debut": round(lo + float(w["start"]), 3),
+                                  "fin": round(lo + float(w["end"]), 3)})
     return words
 
 
@@ -162,14 +205,17 @@ def align(a, b, thr=0.75):
     En cas d'égalité, la remontée depuis la fin préfère les correspondances les plus tardives :
     quand une phrase est répétée, c'est la dernière prise qui est associée au script."""
     n, m = len(a), len(b)
-    MATCH, SUB, GAP = 2.0, -1.0, -1.0
+    # une substitution coûte plus cher que deux trous : on n'associe que des mots vraiment identiques,
+    # ce qui empêche de recoller des morceaux de prises différentes
+    MATCH, SUB, GAP = 2.0, -3.0, -1.0
     sc = np.zeros((n + 1, m + 1))
     sc[:, 0] = np.arange(n + 1) * GAP
     sc[0, :] = np.arange(m + 1) * GAP
     sim = np.zeros((n, m))
     for i in range(n):
         for j in range(m):
-            sim[i, j] = similar(a[i], b[j])
+            # mots courts (« pas », « repas ») : il faut qu'ils soient identiques
+            sim[i, j] = 1.0 if a[i] == b[j] else (similar(a[i], b[j]) if min(len(a[i]), len(b[j])) >= 5 else 0.0)
     for i in range(1, n + 1):
         for j in range(1, m + 1):
             d = MATCH if sim[i - 1, j - 1] >= thr else SUB
@@ -180,9 +226,11 @@ def align(a, b, thr=0.75):
             d = MATCH if sim[i - 1, j - 1] >= thr else SUB
             if sc[i, j] == sc[i - 1, j - 1] + d:
                 pairs.append((i - 1, j - 1)); i -= 1; j -= 1; continue
-        if j > 0 and sc[i, j] == sc[i, j - 1] + GAP:
-            pairs.append((None, j - 1)); j -= 1; continue
-        pairs.append((i - 1, None)); i -= 1
+        # à égalité, on saute plutôt un mot du script qu'un mot prononcé : le mot prononcé le plus tardif
+        # reste candidat, donc c'est la DERNIÈRE prise qui est associée au script
+        if i > 0 and sc[i, j] == sc[i - 1, j] + GAP:
+            pairs.append((i - 1, None)); i -= 1; continue
+        pairs.append((None, j - 1)); j -= 1
     return pairs[::-1]
 
 
@@ -220,41 +268,97 @@ def false_starts(sp, script):
     return marks
 
 
-def classify(script, spoken, cut_additions=False):
-    """Décide pour chaque mot prononcé s'il est gardé ou coupé (reprise / hésitation)."""
+def script_sentences(text):
+    """Phrases du script (les numéros de liste « 1. » restent collés à leur phrase)."""
+    parts = [p.strip() for p in re.split(r"(?<=[.!?…])\s+", text.strip()) if p.strip()]
+    out = []
+    for p in parts:
+        if out and re.fullmatch(r"\d+[.)]?", out[-1]):
+            out[-1] += " " + p
+        else:
+            out.append(p)
+    return [w for w in ([n for n in (norm(t) for t in p.split()) if n and not n.isdigit()] for p in out) if w]
+
+
+def lcs(a, b):
+    """Nombre de mots en commun dans le même ordre."""
+    m = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+    for i in range(len(a)):
+        for j in range(len(b)):
+            m[i + 1][j + 1] = m[i][j] + 1 if same_word(a[i], b[j]) else max(m[i][j + 1], m[i + 1][j])
+    return m[-1][-1]
+
+
+def classify(script_text, spoken, cut_additions=False):
+    """Décide pour chaque mot prononcé s'il est gardé ou coupé, phrase par phrase :
+    pour chaque phrase du script, on garde la DERNIÈRE prise complète, les autres sont des reprises."""
+    sentences = script_sentences(script_text)
     sp = [norm(w["mot"]) for w in spoken]
-    pairs = align(script, sp)
-    status = ["garde"] * len(sp)
-    script_pos = [None] * len(sp)
-    for si, ti in pairs:
-        if ti is not None:
-            script_pos[ti] = si
-            if si is None:
-                status[ti] = "en_trop"
-    # Qualifier chaque groupe de mots en trop
-    k = 0
-    while k < len(sp):
-        if status[k] != "en_trop":
-            k += 1; continue
-        e = k
-        while e + 1 < len(sp) and status[e + 1] == "en_trop":
-            e += 1
-        nxt = next((script_pos[x] for x in range(e + 1, len(sp)) if script_pos[x] is not None), len(script))
-        prv = next((script_pos[x] for x in range(k - 1, -1, -1) if script_pos[x] is not None), -1)
-        window = script[max(0, prv - 2): nxt + (e - k) + 4]
-        for x in range(k, e + 1):
-            w = sp[x]
-            if w in HESITATIONS:
+    n = len(sp)
+    # 1. élans de parole : séparés par une pause ou une ponctuation de fin
+    phrases, cur = [], []
+    for i, w in enumerate(spoken):
+        if cur and (w["debut"] - spoken[i - 1]["fin"] > 0.45 or re.search(r"[.!?…]$", spoken[i - 1]["mot"])):
+            phrases.append(cur)
+            cur = []
+        cur.append(i)
+    if cur:
+        phrases.append(cur)
+    words_of = lambda a, b: [x for ph in phrases[a:b + 1] for x in ph if sp[x] not in HESITATIONS]
+
+    # 2. pour chaque phrase du script (de la fin vers le début), la dernière prise qui la dit en entier
+    chosen = {}
+    limit = len(phrases)
+    for si in range(len(sentences) - 1, -1, -1):
+        target = sentences[si]
+        best = None
+        for a in range(limit - 1, -1, -1):
+            for b in range(a, min(a + 3, limit)):
+                ws = [sp[x] for x in words_of(a, b)]
+                if not ws:
+                    continue
+                common = lcs(target, ws)
+                rappel, precision = common / len(target), common / len(ws)
+                if rappel >= 0.75 and precision >= 0.6:
+                    score = (rappel + precision, -(b - a))
+                    if best is None or score > best[0]:
+                        best = (score, a, b)
+            if best:
+                break  # la prise la plus tardive qui convient
+        if best:
+            _, a, b = best
+            chosen[si] = (a, b)
+            limit = a
+
+    status = ["reprise"] * n
+    kept_phrases = {p for a, b in chosen.values() for p in range(a, b + 1)}
+    for pi, ph in enumerate(phrases):
+        ws = [sp[x] for x in ph]
+        if pi in kept_phrases:
+            for x in ph:
+                status[x] = "hesitation" if sp[x] in HESITATIONS else "garde"
+            continue
+        if any(w in {norm(r) for r in RECOMMENCE} for w in ws):
+            for x in ph:
                 status[x] = "hesitation"
-            elif any(same_word(w, s) for s in window):
+            continue
+        # élan qui ne correspond à aucune prise gardée : essai raté d'une phrase du script, ou ajout
+        ressemble = any(lcs(t, ws) / max(1, len(ws)) >= 0.5 for t in sentences)
+        for x in ph:
+            if sp[x] in HESITATIONS:
+                status[x] = "hesitation"
+            elif ressemble or cut_additions:
                 status[x] = "reprise"
             else:
-                status[x] = "reprise" if cut_additions else "ajout_garde"
-        k = e + 1
-    # Phrases recommencées : on garde toujours la DERNIÈRE prise
-    for x in false_starts(sp, script):
-        if status[x] != "hesitation":
-            status[x] = "reprise"
+                status[x] = "ajout_garde"
+
+    # 3. dans une prise gardée, les débuts de phrase recommencés (« faire du renfor... faire du renforcement »)
+    for a, b in chosen.values():
+        idx = [x for p in range(a, b + 1) for x in phrases[p]]
+        local = false_starts([sp[x] for x in idx], [w for t in sentences for w in t])
+        for k in local:
+            if status[idx[k]] == "garde":
+                status[idx[k]] = "reprise"
     return status
 
 
@@ -478,7 +582,7 @@ def main():
     args = ap.parse_args()
 
     out = args.sortie or os.path.splitext(args.video)[0] + "_derush.mp4"
-    script = tokenize_script(open(args.script, encoding="utf-8").read())
+    script_text = open(args.script, encoding="utf-8").read()
     fps, duration = probe(args.video)
     tmp = tempfile.mkdtemp(prefix="derush_")
     engine_args = (args.modele, "whisper" if args.moteur == "whisper" else None)
@@ -494,7 +598,7 @@ def main():
     print(f"▶ Transcription : {engine} ({reason})")
     print("  Entendu : " + " ".join(w["mot"] for w in words))
 
-    status = classify(script, words, args.couper_ajouts)
+    status = classify(script_text, words, args.couper_ajouts)
     db = energy_db(audio)
     calib = calibrate(db, words)
     thr = calib["seuil_silence_db"]

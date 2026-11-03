@@ -32,8 +32,10 @@ SR = 16000
 FRAME = 0.020          # fenêtre d'analyse du son (20 ms)
 HOP = 0.010            # pas d'analyse (10 ms)
 MIN_SILENCE = 0.060    # un silence doit durer au moins 60 ms pour accueillir une coupe
-EDGE_MARGIN = 0.020    # marge de sécurité à l'intérieur d'un silence
-HESITATIONS = {"euh", "heu", "euhm", "hum", "hmm", "mmh", "mm", "bah", "ben", "ah", "oh", "eh", "hein"}
+EDGE_MARGIN = 0.045    # marge de sécurité à l'intérieur d'un silence
+HESITATIONS = {"euh", "heu", "euhm", "hum", "hmm", "mmh", "mm", "bah", "ben", "ah", "oh", "eh", "hein", "tch", "pff"}
+# élans faits uniquement de ces mots (« Non. », « Bon. ») : petites réactions entre deux prises
+REACTIONS = {"non", "bon", "voila", "ok", "okay", "attends", "allez", "alors"}
 # mots qui signalent une prise ratée : tout le groupe de mots en trop qui les contient est coupé
 RECOMMENCE = {"recommence", "recommencer", "recommencé", "attends", "pardon", "oups", "zut", "mince"}
 
@@ -338,7 +340,7 @@ def classify(script_text, spoken, cut_additions=False):
             for x in ph:
                 status[x] = "hesitation" if sp[x] in HESITATIONS else "garde"
             continue
-        if any(w in {norm(r) for r in RECOMMENCE} for w in ws):
+        if any(w in {norm(r) for r in RECOMMENCE} for w in ws) or all(w in REACTIONS | HESITATIONS for w in ws):
             for x in ph:
                 status[x] = "hesitation"
             continue
@@ -385,7 +387,24 @@ def calibrate(db, words):
         in_words[max(0, a):min(len(db), b)] = True
     voice = float(np.percentile(db[in_words], 90)) if in_words.any() else float(np.percentile(db, 95))
     thr = floor + max(6.0, 0.25 * (voice - floor))
-    return {"bruit_de_fond_db": round(floor, 1), "voix_db": round(voice, 1), "seuil_silence_db": round(thr, 1)}
+    # repli : une respiration entre deux prises, au moins 24 dB sous la voix
+    pause = max(thr, voice - 24.0)
+    return {"bruit_de_fond_db": round(floor, 1), "voix_db": round(voice, 1), "seuil_silence_db": round(thr, 1),
+            "seuil_respiration_db": round(pause, 1)}
+
+
+def breath_runs(db, pause_thr, words):
+    """Respirations utilisables pour une coupe : sous le seuil de respiration, au moins 0,12 s,
+    et sans toucher le cœur d'un mot transcrit (le milieu de chaque mot reste protégé)."""
+    cores = [(w["debut"] + 0.3 * (w["fin"] - w["debut"]), w["fin"] - 0.3 * (w["fin"] - w["debut"])) for w in words]
+    out = []
+    for r in silent_runs(db, pause_thr):
+        if r[1] - r[0] < 0.12:
+            continue
+        if any(a < r[1] and b > r[0] for a, b in cores):
+            continue
+        out.append(r)
+    return out
 
 
 def silent_runs(db, thr):
@@ -430,7 +449,7 @@ def find_run(runs, lo, hi):
     return best
 
 
-def plan_cuts(words, status, runs, fps, duration):
+def plan_cuts(words, status, runs, fps, duration, breaths=(), pause_max=0.5):
     cuts, refused = [], []
     n, k = len(words), 0
     mid = lambda w: (w["debut"] + w["fin"]) / 2
@@ -441,6 +460,7 @@ def plan_cuts(words, status, runs, fps, duration):
         while e + 1 < n and status[e + 1] in ("reprise", "hesitation"):
             e += 1
         group = [words[x]["mot"] for x in range(k, e + 1)]
+        seuil_debut = seuil_fin = "silence"
         # début de la coupe : dans le silence entre le dernier mot gardé et le premier mot coupé
         if k == 0:
             cs, rs = 0.0, (0.0, 0.0)
@@ -448,6 +468,10 @@ def plan_cuts(words, status, runs, fps, duration):
             p = words[k - 1]
             rs = find_run(runs, p["debut"], words[k]["fin"])
             cs = None if rs is None else snap_in_run(rs[0] + min(0.10, 0.4 * (rs[1] - rs[0])), rs, fps)
+            if cs is None:  # pas de silence : une respiration entre le mot gardé et la reprise
+                rs = find_run(breaths, p["debut"], words[k]["fin"])
+                cs = None if rs is None else snap_in_run((rs[0] + rs[1]) / 2, rs, fps)
+                seuil_debut = "respiration" if cs is not None else seuil_debut
         # fin de la coupe : dans le silence entre le dernier mot coupé et le mot gardé suivant
         if e == n - 1:
             ce, re_ = math.floor(duration * fps) / fps, (duration, duration)
@@ -455,13 +479,74 @@ def plan_cuts(words, status, runs, fps, duration):
             q = words[e + 1]
             re_ = find_run(runs, words[e]["debut"], q["fin"])
             ce = None if re_ is None else snap_in_run(re_[1] - min(0.10, 0.4 * (re_[1] - re_[0])), re_, fps)
+            if ce is None:
+                re_ = find_run(breaths, words[e]["debut"], q["fin"])
+                ce = None if re_ is None else snap_in_run((re_[0] + re_[1]) / 2, re_, fps)
+                seuil_fin = "respiration" if ce is not None else seuil_fin
+        partiel = False
+        # pas de silence au bord : on coupe quand même ce qui peut l'être, d'un silence à l'autre à l'intérieur du groupe
+        interieurs = [r for r in runs if r[0] > words[k]["debut"] and r[1] < words[e]["fin"] and r[1] - r[0] >= MIN_SILENCE]
+        if cs is None and interieurs:
+            r = interieurs[0]
+            cs, partiel = snap_in_run(r[0] + min(0.10, 0.4 * (r[1] - r[0])), r, fps), True
+        if ce is None and interieurs:
+            r = interieurs[-1]
+            ce, partiel = snap_in_run(r[1] - min(0.10, 0.4 * (r[1] - r[0])), r, fps), True
         if cs is None or ce is None or ce - cs < 1.0 / fps:
             refused.append({"mots": group, "raison": "pas de silence assez long autour : non coupé par sécurité"})
         else:
-            cuts.append({"debut": cs, "fin": ce, "mots": group, "silence_debut": rs, "silence_fin": re_})
+            cuts.append({"debut": cs, "fin": ce, "mots": group, "silence_debut": rs, "silence_fin": re_,
+                         "seuil_debut": seuil_debut, "seuil_fin": seuil_fin})
+            if partiel:
+                refused.append({"mots": group, "raison": "coupé en partie seulement : pas de silence entre la reprise "
+                                                          "et la phrase gardée, un bout de reprise reste"})
         k = e + 1
+    # début et fin : on enlève l'attente avant le premier mot gardé et après le dernier
+    gardes = [i for i, st in enumerate(status) if st not in ("reprise", "hesitation")]
+    if gardes:
+        premier, dernier = words[gardes[0]], words[gardes[-1]]
+        r = find_run(runs, max(0.0, premier["debut"] - 3.0), premier["debut"] + 0.15)
+        t = snap_in_run(r[1] - 0.25, r, fps) if r and r[1] - r[0] > 0.3 else None
+        if t and t > 0.5 and not any(c["debut"] <= 0.01 for c in cuts):
+            cuts.append({"debut": 0.0, "fin": t, "mots": ["(attente avant de parler)"], "silence_debut": (0, 0), "silence_fin": r})
+        r = find_run(runs, dernier["fin"] - 0.15, dernier["fin"] + 3.0)
+        t = snap_in_run(r[0] + 0.4, r, fps) if r and r[1] - r[0] > 0.5 else None
+        fin_video = math.floor(duration * fps) / fps
+        if t and fin_video - t > 0.5 and not any(c["fin"] >= fin_video - 0.01 for c in cuts):
+            cuts.append({"debut": t, "fin": fin_video, "mots": ["(fin après le dernier mot)"], "silence_debut": r, "silence_fin": (duration, duration)})
+    # temps morts : toute pause de plus de pause_max entre deux mots gardés est raccourcie (coupe dans le silence)
+    if pause_max:
+        gardes_idx = [i for i, st in enumerate(status) if st not in ("reprise", "hesitation")]
+        for a_i, b_i in zip(gardes_idx, gardes_idx[1:]):
+            wa, wb = words[a_i], words[b_i]
+            dedans = sum(max(0.0, min(c["fin"], wb["debut"]) - max(c["debut"], wa["fin"])) for c in cuts)
+            if wb["debut"] - wa["fin"] - dedans <= pause_max:
+                continue  # pause déjà assez courte (les coupes de reprise comprises)
+            calmes = sorted(set(map(tuple, runs)) | set(map(tuple, breaths)))
+            # premier moment calme après le dernier mot, dernier moment calme avant le mot suivant
+            ra = next((r for r in calmes if r[1] > wa["fin"] - 0.15 and r[0] < wa["fin"] + 1.0 and r[0] > wa["debut"]), None)
+            rb = next((r for r in reversed(calmes) if r[0] < wb["debut"] + 0.15 and r[1] > wb["debut"] - 1.2
+                       and r[1] < wb["fin"]), None)
+            if not ra or not rb or rb[1] <= ra[0]:
+                continue
+            garde = pause_max / 2
+            t0 = snap_in_run(min(ra[0] + garde, (ra[0] + ra[1]) / 2), ra, fps)
+            t1 = snap_in_run(max(rb[1] - garde, (rb[0] + rb[1]) / 2), rb, fps)
+            if t0 is not None and t1 is not None and t1 - t0 >= 0.15:
+                est_silence = lambda r: any(x[0] <= r[0] + 1e-6 and x[1] >= r[1] - 1e-6 for x in runs)
+                cuts.append({"debut": t0, "fin": t1, "mots": ["(temps mort)"], "silence_debut": ra, "silence_fin": rb,
+                             "seuil_debut": "silence" if est_silence(ra) else "respiration",
+                             "seuil_fin": "silence" if est_silence(rb) else "respiration"})
+    # fusionner les coupes qui se touchent
     cuts.sort(key=lambda c: c["debut"])
-    return cuts, refused
+    fusion = []
+    for c in cuts:
+        if fusion and c["debut"] <= fusion[-1]["fin"]:
+            fusion[-1]["fin"] = max(fusion[-1]["fin"], c["fin"])
+            fusion[-1]["mots"] = fusion[-1]["mots"] + c["mots"]
+        else:
+            fusion.append(c)
+    return fusion, refused
 
 
 def keep_segments(cuts, duration, fps):
@@ -502,7 +587,8 @@ def to_output_time(t, cuts):
 
 
 # ----------------------------------------------------------------------------- 5. vérifications
-def verify(video_in, video_out, words, status, cuts, db, thr, engine_args, tmp):
+def verify(video_in, video_out, words, status, cuts, db, thr, engine_args, tmp, pause_thr=None):
+    pause_thr = thr if pause_thr is None else pause_thr
     rep = {"raccords": [], "mots_manquants": [], "mots_coupes_par_erreur": []}
     # a) son à chaque raccord : juste avant et juste après chaque coupe, dans l'original et la sortie
     out_audio = extract_audio(video_out, os.path.join(tmp, "sortie.wav"))
@@ -512,10 +598,13 @@ def verify(video_in, video_out, words, status, cuts, db, thr, engine_args, tmp):
         after = level_max(db, c["fin"], c["fin"] + 0.03)
         t_out = to_output_time(c["debut"], cuts)
         at_join = level_max(db_out, t_out - 0.03, t_out + 0.03)
-        ok = before < thr and after < thr and at_join < thr
+        t_av = pause_thr if c.get("seuil_debut") == "respiration" else thr
+        t_ap = pause_thr if c.get("seuil_fin") == "respiration" else thr
+        ok = before < t_av and after < t_ap and at_join < max(t_av, t_ap)
         rep["raccords"].append({"coupe": f"{c['debut']:.3f}s -> {c['fin']:.3f}s", "mots_retires": " ".join(c["mots"]),
                                 "son_avant_db": round(before, 1), "son_apres_db": round(after, 1),
-                                "son_au_raccord_sortie_db": round(at_join, 1), "seuil_db": round(thr, 1),
+                                "son_au_raccord_sortie_db": round(at_join, 1), "seuil_db": round(max(t_av, t_ap), 1),
+                                "dans": "respiration" if max(t_av, t_ap) > thr else "silence",
                                 "ok": bool(ok)})
     # b) aucun mot gardé ne chevauche une coupe (contrôle par le calcul)
     for idx, (w, s) in enumerate(zip(words, status)):
@@ -576,6 +665,8 @@ def main():
     ap.add_argument("--sortie", help="vidéo dérushée (par défaut : NOM_derush.mp4)")
     ap.add_argument("--modele", default="medium", help="modèle Whisper (medium, turbo, large-v3...)")
     ap.add_argument("--moteur", choices=["auto", "whisper"], default="auto")
+    ap.add_argument("--pause-max", type=float, default=0.5,
+                    help="raccourcir les pauses plus longues que ça (secondes) ; 0 pour ne pas y toucher")
     ap.add_argument("--transcription", help="réutiliser la transcription d'un passage précédent (fichier _mots.json)")
     ap.add_argument("--couper-ajouts", action="store_true",
                     help="couper aussi les mots ajoutés hors script qui ne sont pas des reprises")
@@ -604,9 +695,10 @@ def main():
     thr = calib["seuil_silence_db"]
     runs = silent_runs(db, thr)
     print(f"▶ Calibrage du silence : bruit de fond {calib['bruit_de_fond_db']} dB, voix {calib['voix_db']} dB "
-          f"-> seuil {thr} dB")
+          f"-> seuil {thr} dB (respiration : {calib['seuil_respiration_db']} dB)")
 
-    cuts, refused = plan_cuts(words, status, runs, fps, duration)
+    breaths = breath_runs(db, calib["seuil_respiration_db"], words)
+    cuts, refused = plan_cuts(words, status, runs, fps, duration, breaths, args.pause_max)
     report = {"video": args.video, "sortie": out, "moteur_transcription": engine, "raison_moteur": reason,
               "images_par_seconde": fps, "calibrage": calib,
               "mots": [{**w, "decision": s} for w, s in zip(words, status)], "coupes_refusees": refused}
@@ -614,7 +706,7 @@ def main():
     for attempt in range(1, 4):
         segs = keep_segments(cuts, duration, fps)
         render(args.video, segs, out, fps)
-        ver = verify(args.video, out, words, status, cuts, db, thr, engine_args, tmp)
+        ver = verify(args.video, out, words, status, cuts, db, thr, engine_args, tmp, calib["seuil_respiration_db"])
         really_missing = [m["index"] for m in ver["mots_manquants"] if m["dans_une_coupe"] or not m["son_present"]]
         really_missing += [e["index"] for e in ver["mots_coupes_par_erreur"]]
         report.setdefault("passes", []).append({"passe": attempt, "nb_coupes": len(cuts), "verification": ver})
@@ -657,7 +749,7 @@ def main():
     print("▶ Vérifications (passe finale) :")
     for r in ver["raccords"]:
         print(f"   raccord {r['coupe']} : avant {r['son_avant_db']} dB, après {r['son_apres_db']} dB, "
-              f"dans la sortie {r['son_au_raccord_sortie_db']} dB (seuil {r['seuil_db']}) -> "
+              f"dans la sortie {r['son_au_raccord_sortie_db']} dB (seuil {r['seuil_db']}, coupe dans {r['dans']}) -> "
               f"{'OK' if r['ok'] else 'PROBLÈME'}")
     print(f"   Retranscription de la vidéo coupée ({ver['moteur_retranscription']}) : {ver['texte_sortie']}")
     for m in ver["mots_manquants"]:

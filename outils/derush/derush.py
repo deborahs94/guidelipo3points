@@ -561,7 +561,7 @@ def keep_segments(cuts, duration, fps):
     return [s for s in segs if s[1] - s[0] >= 1.0 / fps]
 
 
-def render(video, segs, out, fps):
+def render(video, segs, out, fps, crf=14):
     """Chaque morceau gardé est encodé à part (calé sur ses images), puis les morceaux sont mis bout à bout.
     Le son reste en PCM jusqu'à l'assemblage pour éviter tout blanc ou clic aux raccords."""
     tmp = tempfile.mkdtemp(prefix="derush_morceaux_")
@@ -574,7 +574,7 @@ def render(video, segs, out, fps):
             m = os.path.join(tmp, f"m{i:04d}.mkv")
             run(["ffmpeg", "-y", "-v", "error", "-ss", f"{a:.6f}", "-i", video, "-frames:v", str(n), "-t", f"{d:.6f}",
                  "-af", f"afade=t=in:d={fade:.4f},afade=t=out:st={max(0, d - fade):.4f}:d={fade:.4f}",
-                 "-c:v", "libx264", "-crf", "14", "-preset", "medium", "-pix_fmt", "yuv420p", "-r", str(fps),
+                 "-c:v", "libx264", "-crf", str(crf), "-preset", "medium", "-pix_fmt", "yuv420p", "-r", str(fps),
                  "-c:a", "pcm_s16le", "-ar", "48000", m])
             f.write(f"file '{m}'\n")
     run(["ffmpeg", "-y", "-v", "error", "-f", "concat", "-safe", "0", "-i", liste, "-c:v", "copy",

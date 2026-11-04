@@ -1,0 +1,5 @@
+node_modules/
+out/
+public/media/
+props_mots.json
+props_catalogue*.json

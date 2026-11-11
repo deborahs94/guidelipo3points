@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Programme Formation Lipo RF</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root{
+    --creme:#F8F6F1; --bord:#6B1526; --bord2:#3E2028; --noir:#181818;
+    --beige:#DCCFC2; --beige2:#EFE7DE; --gris:#5b5450;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--creme)}
+  body{font-family:'Montserrat',sans-serif;color:var(--noir);font-size:10.2pt;line-height:1.55;font-weight:400;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;padding:20mm 19mm 18mm}
+  .page:last-child{page-break-after:auto}
+  .run{position:absolute;top:10mm;left:19mm;right:19mm;display:flex;justify-content:space-between;font-size:6.6pt;letter-spacing:2.4px;text-transform:uppercase;color:#a0938a;border-bottom:1px solid #ddd3c9;padding-bottom:2.2mm}
+  .num{position:absolute;bottom:10mm;right:19mm;font-family:'Playfair Display',serif;font-style:italic;color:var(--bord);font-size:10pt}
+  .eyebrow{font-size:7.2pt;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--bord);margin-bottom:2.5mm}
+  h2{font-family:'Playfair Display',serif;font-weight:700;font-size:27pt;line-height:1.08;text-transform:uppercase;margin-bottom:6mm}
+  h2 em{font-style:italic;font-weight:400;color:var(--bord)}
+  h3{font-family:'Playfair Display',serif;font-weight:600;font-size:13pt;line-height:1.25}
+  p+p{margin-top:2.5mm}
+  .lead{font-size:10.8pt;line-height:1.65}
+  strong{font-weight:600}
+
+  /* COVER */
+  .cover{padding:0}
+  .cover .band{background:var(--bord);height:150mm;display:flex;align-items:center;justify-content:center}
+  .cover .frame{border:1px solid rgba(255,255,255,.75);width:128mm;height:96mm;display:flex;align-items:center;justify-content:center}
+  .cover .frame img{width:100mm}
+  .cover .body{padding:15mm 20mm 0;text-align:center}
+  .cover .kicker{font-size:8pt;letter-spacing:4px;text-transform:uppercase;color:var(--bord);font-weight:600}
+  .cover h1{font-family:'Playfair Display',serif;font-weight:700;font-size:33pt;line-height:1.08;margin:5mm 0 3mm;text-transform:uppercase}
+  .cover h1 span{display:block;font-weight:400;font-size:19pt;letter-spacing:.5px;text-transform:none;font-style:italic;color:var(--bord);margin-top:3mm}
+  .cover .chips{display:flex;justify-content:center;flex-wrap:wrap;gap:2.5mm;margin-top:8mm}
+  .chip{background:var(--beige);color:var(--bord2);font-size:7.4pt;letter-spacing:2px;text-transform:uppercase;padding:2.4mm 4.5mm;font-weight:500}
+  .cover .foot{position:absolute;bottom:13mm;left:0;right:0;text-align:center;font-size:7.2pt;letter-spacing:2.6px;text-transform:uppercase;color:#8b7f77}
+
+  /* INTRO */
+  .intro{display:grid;grid-template-columns:1fr 62mm;gap:9mm;align-items:start}
+  .photo{position:relative;padding:5mm 0 0 5mm}
+  .photo::before{content:"";position:absolute;top:0;left:0;right:6mm;bottom:16mm;background:var(--beige)}
+  .photo img{position:relative;width:100%;height:76mm;object-fit:cover;object-position:top;display:block}
+  .photo .cap{position:relative;background:var(--bord);color:#fff;font-family:'Playfair Display',serif;font-style:italic;font-size:9.5pt;text-align:center;padding:2.6mm}
+  .sig{font-family:'Playfair Display',serif;font-style:italic;color:var(--bord);font-size:12pt;margin-top:3mm}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:3.2mm;margin-top:8mm}
+  .tile{background:#fff;border:1px solid #e6ddd3;padding:4mm 4.5mm;display:flex;gap:3.5mm;align-items:flex-start}
+  .tile .ic{flex:0 0 9mm;height:9mm;border-radius:50%;background:var(--bord);color:#fff;font-family:'Playfair Display',serif;font-size:9pt;display:flex;align-items:center;justify-content:center}
+  .tile b{display:block;font-family:'Playfair Display',serif;font-weight:600;font-size:10.8pt;line-height:1.25;margin-bottom:.8mm}
+  .tile span{font-size:8.4pt;color:var(--gris);line-height:1.45;display:block}
+  .tile.dark{background:var(--bord);border-color:var(--bord)}
+  .tile.dark .ic{background:#fff;color:var(--bord)}
+  .tile.dark b,.tile.dark span{color:#fff}
+
+  .forwho{display:grid;grid-template-columns:1fr 1fr;gap:3.2mm;margin-top:6mm}
+  .fw{padding:4.5mm 5mm;background:var(--beige2)}
+  .fw.b{background:var(--bord2);color:#fff}
+  .fw .l{font-size:6.8pt;letter-spacing:2.4px;text-transform:uppercase;opacity:.75;margin-bottom:1.2mm;font-weight:600}
+  .fw p{font-size:8.8pt;line-height:1.5}
+
+  /* TIMELINE */
+  .daybar{display:flex;align-items:center;gap:4mm;margin:-1mm 0 6mm}
+  .daybar .pill{background:var(--bord);color:#fff;font-family:'Playfair Display',serif;font-size:10pt;padding:2mm 5mm;border-radius:20mm}
+  .daybar .t{font-size:8.6pt;color:var(--gris)}
+  .mods{display:grid;grid-template-columns:1fr 1fr;gap:0 8mm}
+  .mod{display:grid;grid-template-columns:10mm 1fr;gap:3mm;padding:3.6mm 0;border-top:1px solid #d9cfc5}
+  .mod .n{font-family:'Playfair Display',serif;color:var(--bord);font-size:15pt;line-height:1}
+  .mod h3{font-size:11pt;margin-bottom:1mm}
+  .mod p{font-size:8.5pt;color:var(--gris);line-height:1.5}
+  .quote{border-left:2px solid var(--bord);padding:1.5mm 0 1.5mm 5mm;font-family:'Playfair Display',serif;font-style:italic;color:var(--bord);font-size:11pt;line-height:1.5;margin-top:6mm}
+
+  /* PRATIQUE */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin:2mm 0 8mm}
+  .step{background:#fff;border:1px solid #e6ddd3;padding:4mm;text-align:left}
+  .step .n{font-family:'Playfair Display',serif;color:var(--bord);font-size:17pt;line-height:1;margin-bottom:2mm}
+  .step b{font-family:'Playfair Display',serif;font-weight:600;font-size:10.2pt;display:block;margin-bottom:1mm;line-height:1.25}
+  .step span{font-size:8pt;color:var(--gris);line-height:1.45;display:block}
+  table{width:100%;border-collapse:collapse;font-size:8.6pt}
+  th{font-family:'Playfair Display',serif;font-weight:600;font-size:9.6pt;text-align:left;background:var(--bord);color:#fff;padding:2.6mm 3.5mm}
+  td{padding:2.8mm 3.5mm;border-bottom:1px solid #ddd3c9;vertical-align:top;line-height:1.45;background:#fff}
+  td:first-child{font-family:'Playfair Display',serif;font-weight:600;font-size:10pt;width:33mm}
+  .no{color:#9c8f86;font-style:italic}
+  .note{font-size:7.8pt;color:var(--gris);margin-top:2.5mm;font-style:italic}
+
+  /* PROTOCOLES */
+  .proto-head{background:var(--bord);color:#fff;padding:7mm 8mm;margin:0 0 6mm;display:flex;gap:7mm;align-items:center}
+  .proto-head .big{font-family:'Playfair Display',serif;font-size:46pt;line-height:.9;font-weight:700}
+  .proto-head .big small{display:block;font-size:10pt;font-weight:400;font-style:italic;letter-spacing:.5px;margin-top:1.5mm}
+  .proto-head p{font-size:9.3pt;line-height:1.6;color:rgba(255,255,255,.92)}
+  .zones{display:grid;grid-template-columns:1fr 1fr;gap:3.2mm}
+  .zone{background:#fff;border:1px solid #e6ddd3;padding:4.2mm 5mm}
+  .zone h3{font-size:11.5pt;margin-bottom:1.5mm;color:var(--bord2)}
+  .zone .tag{display:inline-block;font-size:6.6pt;letter-spacing:1.8px;text-transform:uppercase;background:var(--beige2);color:var(--bord);padding:.8mm 2.2mm;margin-bottom:2mm;font-weight:600}
+  .zone ul{list-style:none}
+  .zone li{font-size:8.5pt;color:var(--gris);padding-left:4mm;position:relative;line-height:1.55}
+  .zone li::before{content:"◆";position:absolute;left:0;color:var(--bord);font-size:5.5pt;top:1.1mm}
+  .zone.wide{grid-column:span 2;background:var(--beige2);border:none}
+
+  /* APRES */
+  .after{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+  .card{background:#fff;border:1px solid #e6ddd3;padding:5mm 5.5mm}
+  .card .k{font-size:6.8pt;letter-spacing:2.4px;text-transform:uppercase;color:var(--bord);font-weight:600;margin-bottom:1.5mm}
+  .card h3{margin-bottom:2mm}
+  .card p,.card li{font-size:8.6pt;color:var(--gris);line-height:1.55}
+  .card ul{list-style:none;columns:2;column-gap:5mm}
+  .card ul li{padding-left:3.5mm;position:relative;break-inside:avoid}
+  .card ul li::before{content:"◆";position:absolute;left:0;color:var(--bord);font-size:5.5pt;top:1.1mm}
+  .card.span{grid-column:span 2}
+  .cta{margin-top:7mm;background:var(--bord2);color:#fff;padding:8mm 9mm;display:flex;justify-content:space-between;align-items:center;gap:8mm}
+  .cta h3{font-size:17pt;font-weight:600;line-height:1.2}
+  .cta h3 em{font-weight:400}
+  .cta p{font-size:8.6pt;opacity:.8;margin-top:1.5mm}
+  .cta .tel{text-align:right;white-space:nowrap}
+  .cta .tel b{display:block;font-family:'Playfair Display',serif;font-size:17pt;font-weight:600}
+  .cta .tel span{font-size:7.2pt;letter-spacing:2.2px;text-transform:uppercase;opacity:.75}
+  .badges{display:flex;justify-content:center;gap:7mm;margin-top:6mm;font-size:7pt;letter-spacing:2.2px;text-transform:uppercase;color:#8b7f77}
+  .endlogo{position:absolute;bottom:9mm;left:19mm;width:34mm}
+</style>
+</head>
+<body>
+
+<!-- 1. COUVERTURE -->
+<section class="page cover">
+  <div class="band"><div class="frame"><img src="img/logo_light.png" alt="Deborah.S"></div></div>
+  <div class="body">
+    <div class="kicker">Programme de formation · Deborah.S Academy</div>
+    <h1>Sculpture corporelle<span>Lipocavitation · Radiofréquence · Lipolaser · Vacuum Therapy</span></h1>
+    <div class="chips">
+      <div class="chip">Visage &amp; corps</div>
+      <div class="chip">1 journée en présentiel</div>
+      <div class="chip">Pratique sur modèle</div>
+      <div class="chip">Suivi illimité</div>
+    </div>
+  </div>
+  <div class="foot">Formatrice &amp; praticienne depuis 2018 · Certifiée Qualiopi · Créteil</div>
+</section>
+
+<!-- 2. EN UN COUP D'ŒIL -->
+<section class="page">
+  <div class="run"><span>Deborah.S Academy</span><span>Programme de formation</span></div>
+  <div class="eyebrow">La formation</div>
+  <h2>Ce que tu <em>vas apprendre</em></h2>
+  <div class="intro">
+    <div>
+      <p class="lead">En 2018, ma première formation en lipocavitation était mauvaise. J'ai tout réappris seule, séance après séance, jusqu'à ce que mes clientes voient des résultats visibles en 4 séances.</p>
+      <p class="lead">Et là, tout le monde m'a posé la même question : <em>« Mais comment tu fais ça ? »</em></p>
+      <p>Cette formation, c'est ma réponse. Je ne t'apprends pas à appuyer sur un bouton. Je t'apprends mes protocoles, ceux que j'utilise dans mon institut, avec la logique derrière chaque geste. Parce qu'une machine ne travaille pas toute seule.</p>
+      <div class="sig">Deborah ✦</div>
+    </div>
+    <div class="photo"><img src="img/ph_s.jpg" alt="Deborah.S"><div class="cap">Deborah.S, formatrice</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="tile dark"><div class="ic">1</div><div><b>1 journée en présentiel</b><span>En petit groupe, 3 personnes maximum. Tu poses tes questions en direct.</span></div></div>
+    <div class="tile"><div class="ic">☀</div><div><b>Le matin : la théorie</b><span>Les 4 techniques, la sécurité, mes protocoles et la stratégie commerciale.</span></div></div>
+    <div class="tile"><div class="ic">✋</div><div><b>L'après-midi : la pratique</b><span>Séances complètes visage et corps sur un modèle dédié.</span></div></div>
+    <div class="tile"><div class="ic">41</div><div><b>E-book de 41 pages</b><span>Le Manuel ultime de sculpture corporelle, à garder avec toi.</span></div></div>
+    <div class="tile"><div class="ic">▶</div><div><b>E-learning pour réviser</b><span>Tu revois les techniques après la formation, à ton rythme.</span></div></div>
+    <div class="tile"><div class="ic">⚙</div><div><b>Machine incluse</b><span>Selon la formule que tu choisis : avec ou sans machine professionnelle.</span></div></div>
+    <div class="tile"><div class="ic">∞</div><div><b>Suivi illimité</b><span>Réponses sous 48 h et aide sur tes cas clientes, même des mois après.</span></div></div>
+    <div class="tile"><div class="ic">✦</div><div><b>Certificat + séance offerte</b><span>Tu ressens toi-même ce que vivra ta future cliente.</span></div></div>
+  </div>
+
+  <div class="forwho">
+    <div class="fw b"><div class="l">Tu veux te reconvertir</div><p>Tu pars avec les bons protocoles dès le départ, sans les erreurs que j'ai faites en 2018.</p></div>
+    <div class="fw"><div class="l">Tu es déjà praticienne</div><p>Tu ajoutes 4 techniques visage et corps et tu apprends à vendre de vraies cures.</p></div>
+  </div>
+  <div class="num">02</div>
+</section>
+
+<!-- 3. MATIN -->
+<section class="page">
+  <div class="run"><span>Deborah.S Academy</span><span>Programme de formation</span></div>
+  <div class="eyebrow">Le matin</div>
+  <h2>La théorie, <em>pour comprendre</em></h2>
+  <div class="daybar"><div class="pill">Matin</div><div class="t">Comprendre ce que tu fais, et pourquoi, avant de toucher la machine.</div></div>
+  <div class="mods">
+    <div class="mod"><div class="n">01</div><div><h3>Accueillir ta cliente</h3><p>Bilan, consentement, autorisation photos. Prendre des mesures et des photos avant/après qui ne faussent pas le résultat.</p></div></div>
+    <div class="mod"><div class="n">02</div><div><h3>Comprendre ce que tu traites</h3><p>Graisse sous-cutanée ou viscérale, les couches de la peau, la cellulite et ses 4 stades. Savoir quand une technique ne servira à rien.</p></div></div>
+    <div class="mod"><div class="n">03</div><div><h3>Le système lymphatique</h3><p>Où sont les ganglions, dans quel sens travailler. Un geste à contre-courant, et ta séance perd en efficacité.</p></div></div>
+    <div class="mod"><div class="n">04</div><div><h3>Lipocavitation</h3><p>Comment agissent les ultrasons, 40 kHz ou 80 kHz, le bon conducteur, et les zones où on ne pose jamais la sonde.</p></div></div>
+    <div class="mod"><div class="n">05</div><div><h3>Radiofréquence</h3><p>Raffermir la peau du visage et du corps. Monter la chaleur progressivement et lire les réactions de ta cliente.</p></div></div>
+    <div class="mod"><div class="n">06</div><div><h3>Lipolaser</h3><p>La lumière rouge froide, les modes continu et pulsé, la pose des pads selon la zone.</p></div></div>
+    <div class="mod"><div class="n">07</div><div><h3>Vacuum Therapy</h3><p>Aspiration réglée au plus bas puis augmentée, direction des gestes vers les ganglions, l'huile qui ne bouche pas le filtre.</p></div></div>
+    <div class="mod"><div class="n">08</div><div><h3>Sécurité &amp; législation</h3><p>Contre-indications, délais d'attente (chirurgie, Botox, laser…), consignes à donner avant et après le soin.</p></div></div>
+    <div class="mod"><div class="n">09</div><div><h3>Hygiène &amp; consommables</h3><p>Gels, huiles, conducteurs : lequel pour quelle technique. Désinfection des sondes et du matériel.</p></div></div>
+    <div class="mod"><div class="n">10</div><div><h3>Stratégie commerciale</h3><p>Construire tes cures et tes packs, fixer tes tarifs, et savoir les proposer à tes clientes.</p></div></div>
+  </div>
+  <div class="quote">Et pour finir la matinée : démonstration en direct. Tu vois le protocole complet avant de le faire toi-même.</div>
+  <div class="num">03</div>
+</section>
+
+<!-- 4. APRES-MIDI -->
+<section class="page">
+  <div class="run"><span>Deborah.S Academy</span><span>Programme de formation</span></div>
+  <div class="eyebrow">L'après-midi</div>
+  <h2>La pratique, <em>sur modèle dédié</em></h2>
+  <div class="daybar"><div class="pill">Après-midi</div><div class="t">C'est toi qui tiens la pièce à main. Sur un vrai modèle, avec moi à côté.</div></div>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><b>Bilan de ta modèle</b><span>Questions, contre-indications, mesures et photos.</span></div>
+    <div class="step"><div class="n">2</div><b>Séance corps</b><span>Le protocole complet, technique par technique.</span></div>
+    <div class="step"><div class="n">3</div><b>Séance visage</b><span>Radiofréquence et lipolaser sur l'ovale et le menton.</span></div>
+    <div class="step"><div class="n">4</div><b>Débriefing</b><span>Retour personnalisé et échange de cas pratiques.</span></div>
+  </div>
+
+  <div class="eyebrow">Visage &amp; corps</div>
+  <h3 style="font-size:15pt;margin-bottom:4mm">Les 4 techniques, zone par zone</h3>
+  <table>
+    <tr><th>Technique</th><th>Visage</th><th>Corps</th></tr>
+    <tr><td>Lipocavitation</td><td class="no">Jamais sur le visage, le cou ni sur les os. Tu sauras pourquoi.</td><td>Ventre, flancs, bras, cuisses, culotte de cheval, fesses</td></tr>
+    <tr><td>Radiofréquence</td><td>Ovale, mâchoire, double menton, cou, décolleté</td><td>Ventre et côtés, bras, cuisses, fesses, relâchement cutané</td></tr>
+    <tr><td>Lipolaser</td><td>Double menton (pads le long de la mâchoire)</td><td>Ventre, bras, dos, jambes</td></tr>
+    <tr><td>Vacuum Therapy</td><td class="no">Pas sur le visage ni le cou</td><td>Cellulite, cuisses, bras, bourrelet de soutien-gorge, remodelage</td></tr>
+  </table>
+  <p class="note">Tu apprends aussi à combiner les techniques entre elles : c'est l'association qui fait la différence sur une zone.</p>
+  <div class="num">04</div>
+</section>
+
+<!-- 5. PROTOCOLES -->
+<section class="page">
+  <div class="run"><span>Deborah.S Academy</span><span>Programme de formation</span></div>
+  <div class="eyebrow">La méthode Deborah.S</div>
+  <h2>Mes protocoles, <em>zone par zone</em></h2>
+  <div class="proto-head">
+    <div class="big">4<small>séances</small></div>
+    <p>Ce sont les protocoles que j'applique dans mon institut depuis 2018. Chez mes clientes, les résultats sont visibles dès 4 séances. Ils varient d'une personne à l'autre : c'est pour ça qu'on observe toujours avant de choisir. Tu repars avec l'ordre des techniques, les durées et les réglages exacts pour chaque zone.</p>
+  </div>
+  <div class="zones">
+    <div class="zone"><div class="tag">Visage</div><h3>Double menton</h3><ul><li>Lipolaser, mini pads le long de la mâchoire</li><li>Radiofréquence visage, en évitant trachée et thyroïde</li><li>Drainage léger vers les ganglions</li></ul></div>
+    <div class="zone"><div class="tag">Corps</div><h3>Bras</h3><ul><li>Lipolaser à 360° autour du bras</li><li>Radiofréquence</li><li>Cavitation si la zone le demande</li><li>Vacuum vers l'aisselle</li></ul></div>
+    <div class="zone"><div class="tag">Corps</div><h3>Bourrelet de soutien-gorge</h3><ul><li>Lipolaser</li><li>Radiofréquence, côté par côté</li><li>Madérothérapie</li><li>Vacuum RF vers les ganglions</li></ul></div>
+    <div class="zone"><div class="tag">Corps</div><h3>Ventre &amp; poignées d'amour</h3><ul><li>Lipolaser, pads sur toute la zone</li><li>Radiofréquence en suivant les canaux lymphatiques</li><li>Drainage manuel avec respiration profonde</li></ul></div>
+    <div class="zone"><div class="tag">Corps</div><h3>Cuisses</h3><ul><li>Avant et arrière en séances séparées</li><li>Lipolaser, radiofréquence, cavitation</li><li>Vacuum RF, relâché au niveau de l'aine</li><li>Cellulite marquée : finition madérothérapie</li></ul></div>
+    <div class="zone"><div class="tag">Avant chaque séance</div><h3>Préparer le corps</h3><ul><li>Activer le système lymphatique</li><li>Consignes alimentation, eau, sport</li><li>Ce qu'on évite avant et après le soin</li></ul></div>
+  </div>
+  <div class="num">05</div>
+</section>
+
+<!-- 6. APRES -->
+<section class="page">
+  <div class="run"><span>Deborah.S Academy</span><span>Programme de formation</span></div>
+  <div class="eyebrow">Après la formation</div>
+  <h2>Tu ne repars <em>pas seule</em></h2>
+  <div class="after">
+    <div class="card span"><div class="k">Inclus</div><h3>L'e-book de 41 pages · Manuel ultime de sculpture corporelle</h3>
+      <ul>
+        <li>Lancer ton activité : immatriculation, SIRET, assurance</li>
+        <li>Accueil de la cliente, bilan, mesures et photos</li>
+        <li>La graisse, la peau, la cellulite et ses stades</li>
+        <li>Le système lymphatique et le sens du drainage</li>
+        <li>Lipocavitation, radiofréquence, lipolaser, vacuum</li>
+        <li>Réglages des machines et conducteurs</li>
+        <li>Contre-indications, délais et consignes</li>
+        <li>Mes protocoles par zone</li>
+        <li>Hygiène et désinfection</li>
+        <li>Tarifs, packs et promotion de ton activité</li>
+      </ul>
+    </div>
+    <div class="card"><div class="k">Inclus</div><h3>E-learning pour réviser</h3><p>Les techniques en vidéo, à revoir quand tu veux après ta journée. Pratique avant ta première vraie cliente.</p></div>
+    <div class="card"><div class="k">Inclus</div><h3>Suivi illimité</h3><p>Une question sur un cas cliente, un réglage, une zone ? Tu m'écris. Réponse sous 48 h et protocoles adaptés après la formation.</p></div>
+    <div class="card"><div class="k">Selon ta formule</div><h3>Machine professionnelle</h3><p>Tu choisis la formation avec ou sans machine. Avec, tu repars équipée et tu peux commencer tout de suite.</p></div>
+    <div class="card"><div class="k">Inclus</div><h3>Certificat de formation</h3><p>Remis en fin de journée. Paiement possible en 4 fois.</p></div>
+  </div>
+  <div class="cta">
+    <div><h3>Tu veux le programme <em>et les dates ?</em></h3><p>Écris-moi FORMATION sur WhatsApp. Je te réponds personnellement.</p></div>
+    <div class="tel"><b>07 80 99 60 61</b><span>WhatsApp · Créteil</span></div>
+  </div>
+  <div class="badges"><span>✦ Certifiée Qualiopi</span><span>✦ Depuis 2018</span><span>✦ 138 avis Google 5★</span></div>
+  <img class="endlogo" src="img/logo_dark.png" alt="">
+  <div class="num">06</div>
+</section>
+
+</body>
+</html>

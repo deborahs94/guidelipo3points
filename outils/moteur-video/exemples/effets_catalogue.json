@@ -1,0 +1,13 @@
+{
+  "script": "Tu fais du sport, tu manges bien, et pourtant ta cellulite ne bouge pas ? Ce n'est pas ta faute. En six séances, tu peux perdre cinq centimètres.",
+  "duree": 10,
+  "mots_cles": ["cellulite", "faute", "centimètres"],
+  "chapitres": [{"debut": 0, "titre": "Catalogue"}],
+  "effets": [
+    {"type": "carte", "debut": 0, "fin": 2.4, "contenu": "entonnoir", "etapes": ["Diagnostic", "Lipocavitation", "Drainage", "Résultat"]},
+    {"type": "carte", "debut": 2.5, "fin": 5.6, "contenu": "chat", "nom": "Assistant IA", "question": "Combien de séances pour voir un résultat ?", "reponse": "En général 6 à 8 séances, avec une bonne hygiène de vie."},
+    {"type": "carte", "debut": 5.7, "fin": 8.0, "contenu": "checklist", "titre": "Avant ta séance", "elements": ["Bois 1,5 L d'eau", "Évite le café", "Viens détendue"]},
+    {"type": "compteur", "debut": 8.1, "fin": 9.9, "valeur": 87, "suffixe": " %", "libelle": "de clientes satisfaites"},
+    {"type": "icone", "debut": 8.1, "fin": 9.9, "icone": "coeur", "position": "haut", "texte": "Résultat"}
+  ]
+}

@@ -1,0 +1,327 @@
+{
+ "video": "media/video.mp4",
+ "fps": 30.0,
+ "duree": 10.0,
+ "largeur": 1080,
+ "hauteur": 1920,
+ "fondClair": true,
+ "legendes": [
+  {
+   "text": " Tu",
+   "startMs": 0,
+   "endMs": 540,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " fais",
+   "startMs": 540,
+   "endMs": 740,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " du",
+   "startMs": 740,
+   "endMs": 900,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " sport,",
+   "startMs": 900,
+   "endMs": 1220,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " tu",
+   "startMs": 1460,
+   "endMs": 1600,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " manges",
+   "startMs": 1600,
+   "endMs": 1820,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " bien,",
+   "startMs": 1820,
+   "endMs": 2160,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " et",
+   "startMs": 2400,
+   "endMs": 2500,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " pourtant",
+   "startMs": 2500,
+   "endMs": 2720,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " ta",
+   "startMs": 2720,
+   "endMs": 2960,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " cellulite",
+   "startMs": 2960,
+   "endMs": 3360,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": true
+  },
+  {
+   "text": " ne",
+   "startMs": 3360,
+   "endMs": 3580,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " bouge",
+   "startMs": 3580,
+   "endMs": 3820,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " pas ?",
+   "startMs": 3820,
+   "endMs": 4100,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " Ce",
+   "startMs": 4380,
+   "endMs": 4540,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " n'est",
+   "startMs": 4540,
+   "endMs": 4740,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " pas",
+   "startMs": 4740,
+   "endMs": 4900,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " ta",
+   "startMs": 4900,
+   "endMs": 5040,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " faute.",
+   "startMs": 5040,
+   "endMs": 5320,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": true
+  },
+  {
+   "text": " En",
+   "startMs": 5700,
+   "endMs": 5900,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " six",
+   "startMs": 5900,
+   "endMs": 6080,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " séances,",
+   "startMs": 6080,
+   "endMs": 6500,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " tu",
+   "startMs": 6800,
+   "endMs": 6820,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " peux",
+   "startMs": 6820,
+   "endMs": 7040,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " perdre",
+   "startMs": 7040,
+   "endMs": 7320,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " cinq",
+   "startMs": 7320,
+   "endMs": 7700,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": false
+  },
+  {
+   "text": " centimètres.",
+   "startMs": 7700,
+   "endMs": 8320,
+   "timestampMs": null,
+   "confidence": null,
+   "motCle": true
+  }
+ ],
+ "parole": [
+  [
+   0.0,
+   5.32
+  ],
+  [
+   5.7,
+   8.32
+  ]
+ ],
+ "musique": {
+  "src": "media/musique.wav",
+  "gainDb": -20.2,
+  "voixLufs": -23.0,
+  "musiqueLufs": -22.8
+ },
+ "coupes": [
+  2.35,
+  4.3,
+  5.6
+ ],
+ "chapitres": [
+  {
+   "debut": 0,
+   "titre": "Le problème"
+  },
+  {
+   "debut": 4.3,
+   "titre": "La vérité"
+  },
+  {
+   "debut": 5.6,
+   "titre": "Le résultat"
+  }
+ ],
+ "effets": [
+  {
+   "type": "accroche",
+   "debut": 0,
+   "fin": 2.3,
+   "surtitre": "Lipocavitation",
+   "titre": "Ta cellulite ne bouge pas ?",
+   "motFort": "cellulite"
+  },
+  {
+   "type": "transition",
+   "debut": 2.35,
+   "fin": 2.8,
+   "style": "lumiere"
+  },
+  {
+   "type": "icone",
+   "debut": 2.55,
+   "fin": 3.95,
+   "icone": "cible",
+   "position": "gauche"
+  },
+  {
+   "type": "zoom",
+   "debut": 3.3,
+   "fin": 4.25,
+   "force": 1.18
+  },
+  {
+   "type": "grand_titre",
+   "debut": 4.3,
+   "fin": 5.55,
+   "texte": "Ce n'est pas ta faute.",
+   "motFort": "ta faute"
+  },
+  {
+   "type": "transition",
+   "debut": 5.6,
+   "fin": 5.8,
+   "style": "panoramique"
+  },
+  {
+   "type": "carte",
+   "debut": 5.62,
+   "fin": 8.55,
+   "contenu": "chiffre",
+   "valeur": 5,
+   "prefixe": "-",
+   "suffixe": " cm",
+   "libelle": "en 6 séances"
+  },
+  {
+   "type": "fin",
+   "debut": 8.6,
+   "fin": 10,
+   "nom": "Déborah",
+   "sousTitre": "Lipocavitation · Créteil",
+   "compte": "@deborah.s.liporf94"
+  }
+ ],
+ "ambiance": {
+  "grain": 0.05,
+  "etalonnage": true,
+  "chaleur": 0.06
+ },
+ "moteurTranscription": "Whisper local (medium)"
+}

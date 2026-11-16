@@ -1,0 +1,22 @@
+{
+  "script": "Tu fais du sport, tu manges bien, et pourtant ta cellulite ne bouge pas ? Ce n'est pas ta faute. En six séances, tu peux perdre cinq centimètres.",
+  "duree": 10,
+  "mots_cles": ["cellulite", "faute", "centimètres"],
+  "coupes": [2.35, 4.3, 5.6],
+  "chapitres": [
+    {"debut": 0, "titre": "Le problème"},
+    {"debut": 4.3, "titre": "La vérité"},
+    {"debut": 5.6, "titre": "Le résultat"}
+  ],
+  "ambiance": {"grain": 0.05, "etalonnage": true, "chaleur": 0.06},
+  "effets": [
+    {"type": "accroche", "debut": 0, "fin": 2.3, "surtitre": "Lipocavitation", "titre": "Ta cellulite ne bouge pas ?", "motFort": "cellulite"},
+    {"type": "transition", "debut": 2.35, "fin": 2.8, "style": "lumiere"},
+    {"type": "icone", "debut": 2.55, "fin": 3.95, "icone": "cible", "position": "gauche"},
+    {"type": "zoom", "debut": 3.3, "fin": 4.25, "force": 1.18},
+    {"type": "grand_titre", "debut": 4.3, "fin": 5.55, "texte": "Ce n'est pas ta faute.", "motFort": "ta faute"},
+    {"type": "transition", "debut": 5.6, "fin": 5.8, "style": "panoramique"},
+    {"type": "carte", "debut": 5.62, "fin": 8.55, "contenu": "chiffre", "valeur": 5, "prefixe": "-", "suffixe": " cm", "libelle": "en 6 séances"},
+    {"type": "fin", "debut": 8.6, "fin": 10, "nom": "Déborah", "sousTitre": "Lipocavitation · Créteil", "compte": "@deborah.s.liporf94"}
+  ]
+}
